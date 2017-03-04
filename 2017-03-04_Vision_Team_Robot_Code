@@ -1,0 +1,250 @@
+#include <iostream>
+#include <memory>
+#include <string>
+
+#include "WPILib.h"
+#include "CANTalon.h"
+
+#include <CameraServer.h>
+#include <Timer.h>
+#include <IterativeRobot.h>
+#include <LiveWindow/LiveWindow.h>
+#include <SmartDashboard/SendableChooser.h>
+#include <SmartDashboard/SmartDashboard.h>
+#include <Joystick.h>
+#include <Ultrasonic.h>
+#include <sstream>
+#include <cmath>
+
+
+class Robot: public frc::IterativeRobot {
+public:
+	CANTalon lf{2};//front left
+	CANTalon lr{4};//back left
+	CANTalon rf{3};//front right
+	CANTalon rr{1};//back right
+	frc::Timer timer;
+	Ultrasonic* ultra = new Ultrasonic(1,1);
+	RobotDrive* drive = new RobotDrive(lf, lr, rf, rr);
+	Joystick* gamepad = new Joystick(0);
+		std::shared_ptr<NetworkTable> m_Table;
+			bool tgtStatus = 0; // junk value (no targetO is 0
+			double errorX = 0;   //junk is 101 (this may not work)
+			double errorY	 = 0;
+			double tgtDist = 0;   //junk is 101 (this may not work)
+			double tgtAng = 0; // junk is 101 (suggest 1001)
+			int area = 0;
+			int cX = 0;
+			int cY = 0;
+			//double seconds;
+
+
+	void RobotInit() {
+		drive -> SetInvertedMotor(RobotDrive::kFrontLeftMotor, true);
+		drive -> SetInvertedMotor(RobotDrive::kRearLeftMotor, true);
+		ultra -> SetAutomaticMode(true);
+		m_Table = NetworkTable::GetTable("Vision");
+	}
+
+
+	/**
+	 * Getting values from the pi and putting it into variables
+	 */
+	void RefreshTable(){
+		tgtStatus = m_Table -> GetBoolean("tgtStatus", tgtStatus);
+		errorX = m_Table -> GetNumber("errorX",errorX);
+		errorY = m_Table -> GetNumber("errorY",errorY);
+		area = m_Table -> GetNumber("area",area);
+	    tgtDist = m_Table->GetNumber("tgtDist", tgtDist);
+	    tgtAng = m_Table->GetNumber("tgtAng", tgtAng);
+	    cX = m_Table->GetNumber("cX",cX);
+	    cY= m_Table->GetNumber("cY",cY);
+	}
+
+	void DriveStraight(double speed) {
+		drive -> MecanumDrive_Cartesian(0,-1 * speed, 0);
+	}
+
+	void Orbit(double speed, int direction){
+		/*if (direction == 1){
+			lf.Set(speed);
+			lr.Set(speed);
+			rf.Set(speed / 3);
+			rr.Set(speed / 3);
+		}else if(direction == -1){
+			lf.Set(speed / 3);
+			lr.Set(speed / 3);
+			rf.Set(speed);
+			rr.Set(speed);
+		}*/
+		lf.Set(speed);
+		lr.Set(speed);
+		rf.Set(-speed);
+		rr.Set(-speed);
+		/*
+		if (direction == 1){
+			lf.Set(speed);
+			lr.Set(speed);
+			rf.Set(-speed);
+			rr.Set(-speed);
+		}else if(direction == -1){
+			lf.Set(-speed);
+			lr.Set(-speed);
+			rf.Set(speed);
+			rr.Set(speed);
+		} */
+	}
+
+	void Stop(){
+		drive -> MecanumDrive_Cartesian(0,0,0);
+	}
+
+	void AutonomousInit() override {
+		timer.Start();
+
+	}
+
+	void AutonomousPeriodic() {
+		errorX = 0;
+		area = 0;
+		RefreshTable();
+		if(timer.Get()<3.5){
+			lr.Set(.25);
+			lf.Set(.25);
+			rf.Set(.25);
+			rr.Set(.25);
+		}
+		else if (timer.Get()<5 && timer.Get()>3.5){
+			lr.Set(-.25);
+			lf.Set(-.25);
+			rf.Set(.25);
+			rr.Set(.25);
+		}
+		else{
+
+			double offset = 1;
+			if (errorX < 0){
+				offset *= -1;
+			}
+			if (tgtStatus){
+				if (errorX <-35 || errorX > 35){
+					offset *= 0.27;
+					Orbit(offset,NULL);
+				}
+				else if (errorX >-15 && errorX < 15 && area<10000){
+					DriveStraight(.2);
+				}
+				else if (errorX > 15 || errorX < -15){
+					errorX /= 100;
+					offset *= errorX*(0.28) + 0.2;
+					Orbit(offset,NULL);
+				}
+				else{
+					Stop();
+				}
+			}
+		}
+		/*
+		offset = (pow(abs(errorX), 0.5)/30)+0.12; // 160
+		if (errorX < 0){
+			offset *= -1;
+		}
+		if (tgtStatus){
+			if (errorX <-10 || errorX > 10){
+				Orbit(offset,NULL);
+			}
+			else if (errorX >-10 && errorX < 10){
+				DriveStraight(.2);
+			}
+			else{
+				Stop();
+			}
+		}*/
+		/*if (errorX <-20){
+						Orbit(offset,NULL);
+					}
+					if (errorX > 20){
+						Orbit(offset,NULL);
+					}
+					if (area < 9000 && area > 0){
+								DriveStraight(.2);
+					}
+					else{
+							Stop();
+					}*/
+
+
+		/*if (tgtStatus){
+
+			if (errorX > 50 || errorX < -50){
+			}else if(errorX > 10){
+				Orbit(offset, 1);
+			}else if (errorX < -10){
+				Orbit(-1 * offset, -1);
+			}else{
+				DriveStraight(.2);
+			}
+
+		}else{
+			Stop();
+		}*/
+		/*if (tgtStatus){
+
+			if (errorX > 50 || errorX < -50){
+			}else if(errorX > 10){
+				Orbit(offset, 1);
+			}else if (errorX < -10){
+				Orbit(offset, -1);
+			}
+
+		}else{
+			Stop();
+		}*/
+
+	}
+
+	void TeleopInit() {
+		timer.Reset();
+		timer.Start();
+	}
+
+	double DeadBand(double value) {
+		if (value > .1 || value < -.1){
+			return value;
+		}else{
+			return 0;
+		}
+	}
+
+	void TeleopPeriodic() {
+		double sensitivity = (SmartDashboard::GetNumber("DB/Slider 0", 5) / 5);
+		int dist = ultra -> GetRangeInches();
+
+		drive -> MecanumDrive_Cartesian(-1*(sensitivity * DeadBand(gamepad -> GetRawAxis(0))), (sensitivity * DeadBand(gamepad -> GetRawAxis(1))), (sensitivity * (gamepad -> GetRawAxis(3) - gamepad -> GetRawAxis(2))));
+		RefreshTable();
+
+
+    	SmartDashboard::PutString("DB/String 4", std::to_string(dist));
+    	SmartDashboard::PutString("DB/String 0", std::to_string(tgtStatus));
+    	SmartDashboard::PutString("DB/String 1", std::to_string(errorX));
+    	SmartDashboard::PutNumber("cX", (cX));//make sure the constant in Labview dashboard is called "Vision/cx" ALSO
+    	SmartDashboard::PutNumber("cY", (cY));
+    	SmartDashboard::PutBoolean("tgtStatus", (tgtStatus));
+    	SmartDashboard::PutNumber("tgtDist", (tgtDist));
+    	SmartDashboard::PutNumber("errorX", (errorX));
+    	SmartDashboard::PutNumber("errorY", (errorY));
+    	SmartDashboard::PutNumber("tgtAng", (tgtAng));
+	}
+
+	void TestPeriodic() {
+	}
+
+private:
+	frc::LiveWindow* lw = LiveWindow::GetInstance();
+	frc::SendableChooser<std::string> chooser;
+	const std::string autoNameDefault = "Default";
+	const std::string autoNameCustom = "My Auto";
+	std::string autoSelected;
+};
+
+START_ROBOT_CLASS(Robot)
