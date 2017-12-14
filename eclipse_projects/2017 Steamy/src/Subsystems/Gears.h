@@ -4,7 +4,7 @@
 #include <Commands/Subsystem.h>
 #include "../Subsystems/Targeting.h"
 #include "../Subsystems/DriveTrain.h"
-#include <CANTalon.h>
+#include <ctrlib/CANTalon.h>
 #include <Relay.h>
 #include <DigitalInput.h>
 #include "WPILib.h"

@@ -2,7 +2,7 @@
 #define Shooter_H
 
 #include <Commands/Subsystem.h>
-#include "CANTalon.h"
+#include <ctrlib/CANTalon.h>
 #include "WPILib.h"
 
 class Shooter : public Subsystem {

@@ -1,6 +1,6 @@
 #ifndef DriveTrain_H
 #define DriveTrain_H
-#include <CANTalon.h>
+#include <ctrlib/CANTalon.h>
 #include <RobotDrive.h>
 #include "WPILib.h"
 #include <memory>

@@ -2,7 +2,7 @@
 #define Climber_H
 
 #include <Commands/Subsystem.h>
-#include <CANTalon.h>
+#include <ctrlib/CANTalon.h>
 
 class Climber : public Subsystem {
 private:
