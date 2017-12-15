@@ -10,6 +10,8 @@
 #include <SmartDashboard/SendableChooser.h>
 #include <SmartDashboard/SmartDashboard.h>
 
+//All the commands are called here as well as the subsytems that are needed
+//Make sure placement of everything is as close as possible as we had issues when stuff was mixed up
 #include "Commands/ExampleCommand.h"
 #include "CommandBase.h"
 #include "Commands/Testing.h"
@@ -33,7 +35,8 @@ frc::Timer timer;
 
 class Robot: public frc::IterativeRobot {
 private:
-	Joystick *leftStick = new Joystick {0};
+
+	Joystick *leftStick = new Joystick {0}; //Number inside is the usb number found on the dashboard
 	Joystick *rightStick = new Joystick {1};
 	Joystick *gamepad = new Joystick {2};
 	DriveTrain *drive = new DriveTrain();
@@ -84,6 +87,7 @@ public:
 			autonomousCommand.reset(new ExampleCommand());
 		} */
 
+		//Takes in a string from the dashboard and decides what autonomous program to run depending on it
 		std::string autoSelected = frc::SmartDashboard::GetString("DB/String 0", "Default");
 		if (autoSelected == "Center") {
 			autonomousCommand = new CenterAuto();
@@ -102,11 +106,14 @@ public:
 		}else{
 			autonomousCommand = new DudAuto();
 		}
+
+		//Checks for errors and returns a message if so
 		if (autonomousCommand != nullptr)
 			autonomousCommand->Start();
 		else
 			SmartDashboard::PutString("DB/String 0", "No Command");
 
+		//We really had issues with encoders not reseting
 		drive -> ResetEncoders();
 	}
 
@@ -126,6 +133,8 @@ public:
 	}
 
 	void TeleopPeriodic() override {
+		//Each of these programs takes doubles and bools. They're the programs declared in the subsystems
+
 		drive -> Teleop(leftStick -> GetX(), leftStick -> GetY(), rightStick -> GetX(), rightStick -> GetZ(), gamepad -> GetRawButton(1), gamepad -> GetPOV());
 		shooter -> Shoot(gamepad -> GetRawButton(6), gamepad -> GetRawButton(5));
 		climber -> Climb(gamepad -> GetRawButton(4));

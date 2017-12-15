@@ -19,15 +19,19 @@ void DriveTrain::InitDefaultCommand() {
 	// Set the default command for a subsystem here.
 	// SetDefaultCommand(new MySpecialCommand());
 
+	//Inverts the motors so that they run correctly. Varries from robot to robot
     drive->SetInvertedMotor(RobotDrive::kFrontLeftMotor,true);
     drive->SetInvertedMotor(RobotDrive::kRearLeftMotor,true);
     drive->SetSafetyEnabled(false);
     ResetEncoders();
 }
 
-void DriveTrain::DriveStraight(double speed){
-	drive -> MecanumDrive_Cartesian(0,-speed,0);
-	SmartDashboard::PutString("DB/String 5", "Straight");
+//MecanumDrive_Cartesian takes parameters (strafe speed, forward speed, rotation speed) The gyro isnt neccesary
+//You can the parameters by looking at wpilib and hovering over it
+
+void DriveTrain::DriveStraight(double speed){ //Goes forward with a certain speed
+	drive -> MecanumDrive_Cartesian(0,-speed,0); //Negative because of the way things worked out. Probably used the wrong inverts
+	SmartDashboard::PutString("DB/String 5", "Straight"); //These are here to debug. Sends a string to the dashboard (location name, string)
 }
 
 void DriveTrain::Strafe(double speed){
@@ -55,7 +59,7 @@ void DriveTrain::Stop(){
 	SmartDashboard::PutString("DB/String 5", "Stopped");
 }
 
-double DriveTrain::DeadBand(double input, double band){
+double DriveTrain::DeadBand(double input, double band){ //Makes sure the joysticks are always set to zero when not used. Gets rid of very small values
 	if (input > band || input < -band)
 		return input;
 	else
@@ -65,7 +69,7 @@ double DriveTrain::DeadBand(double input, double band){
 void DriveTrain::Teleop(double xVal, double yVal, double zVal, double sensitivity, bool toggleButton, int POV){
 
 	sensitivity = (sensitivity - 1) / -2; //The z-axis on the controller goes from -1 (UP) to 1 DOWN
-
+	//Takes in the values from the joysticks and uses them in the command with a sensitivity and deadband
 	drive->MecanumDrive_Cartesian(sensitivity * (DeadBand(xVal,0.15)),
 							      sensitivity * (DeadBand(yVal,0.15)),
 								  sensitivity * (DeadBand(zVal,0.15)));

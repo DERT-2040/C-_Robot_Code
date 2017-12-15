@@ -16,13 +16,15 @@
 
 class DriveTrain : public Subsystem {
 private:
+	//Create an object for each motor. The number corresponds to CAN value
 	CANTalon rf{1}; /*right front */
 	CANTalon rr{2}; /*right rear */
 	CANTalon lf{3}; /*left front */
 	CANTalon lr{4};/*left rear */
-
+	//Creates an object that combines all the motor into one to make it easier to use
 	RobotDrive *drive = new RobotDrive {lf, lr, rf, rr};
 
+	//Variables that were used to work with encoders. Doesn't really work
 	bool encodersCheck = false;
 	int lfPWP = 0;
 	int lrPWP = 0;
@@ -36,7 +38,9 @@ private:
 
 
 public:
+	//Everytime you add a program to the .cpp, you MUST declare it here as this is what every other program will see
 
+	//Format is: (Data type) (Command name) (Parameters separated by commas with varible types)
 	DriveTrain();
 	void InitDefaultCommand();
 	void DriveStraight(double speed);

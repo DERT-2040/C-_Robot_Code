@@ -182,18 +182,25 @@ bool Gears::GearDeploy(){
 
 
 void Gears::TeleopGears(bool input, bool output){
+	//These two input, ouput variables work as toggles. Each is connected to a button and changes when (x) and (b) are pressed
+
 	if (input)
 		status = 1;
 	if (output)
 		status = -1;
 
+	//NO and NC mean normally open and closed. NO gives a boolean true when the limit switch is open. NC gives a true when it's closed
+	//The redundency is so that if one of the swtiches isn't reading corectly, the motor doesn't run
 	if (status == 1){
+		//Moves until it hits the back end, stops when it does
 		if (endNO -> Get() && !endNC -> Get()){
-			talon.Set(1);
+			talon.Set(1); //This is the window motor that turns the bar
 		}else{
 			talon.Set(0);
 		}
+	//Press button to make it start moving back to the start
 	}else if (status == -1){
+		//Move until it resets and hits the starting limit switch
 		if(startNO -> Get() && !startNC -> Get()){
 			talon.Set(-1);
 		}else{
@@ -202,6 +209,7 @@ void Gears::TeleopGears(bool input, bool output){
 	}
 }
 
+//Variable reset
 void Gears::Reset(){
 	triggerHit = false;
 	state = 0;
@@ -210,6 +218,7 @@ void Gears::Reset(){
 	timer.Reset();
 }
 
+//Safety that wasn't used
 void Gears::ManualReverse(bool emergency){
 	if (emergency)
 		talon.Set(.5);
@@ -217,6 +226,7 @@ void Gears::ManualReverse(bool emergency){
 		talon.Set(0);
 }
 
+//First attempt at automatic deployment I think. Doesn't work very well
 void Gears::Openplease(){
 	//SmartDashboard::PutString("DB/String 7", "GearDeployment");
 
@@ -235,6 +245,7 @@ void Gears::Openplease(){
 			autoGears = true;
 		}
 
+		//Fiddling around with the limit switches. This was to get their values in real time
 		int try1 = endNO -> Get();
 		int try2 = endNC -> Get();
 		int try3 = startNO -> Get();

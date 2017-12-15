@@ -12,7 +12,7 @@ void Targeting::InitDefaultCommand() {
 
 // Put methods for controlling this subsystem
 // here. Call these from Commands.
-void Targeting::GetValues() {
+void Targeting::GetValues() { //Import these values from the pi
 	cX = m_table -> GetNumber("cX",cX);
 	cY = m_table -> GetNumber("cY",cY);
 	tgtStatus = m_table -> GetBoolean("tgtStatus", tgtStatus);
