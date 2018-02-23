@@ -11,7 +11,7 @@
 
 #include "ctre/Phoenix.h"
 
-
+#include <iostream>
 #include "Drivetrain.h"
 #include "../RobotMap.h"
 #include "../Commands/JoystickDrivetrain.h"
@@ -35,7 +35,11 @@ Drivetrain::Drivetrain() : frc::PIDSubsystem("Drivetrain",0.000027,0.0000000,0.0
 	drive->SetInvertedMotor(frc::RobotDrive::kRearLeftMotor,true);
 	drive->SetInvertedMotor(frc::RobotDrive::kFrontLeftMotor,true);
 
-
+	lB->SetInverted(true);
+	rF->SetNeutralMode(Brake);
+	rB->SetNeutralMode(Brake);
+	lF->SetNeutralMode(Brake);
+	lB->SetNeutralMode(Brake);
 	SetOutputRange(-0.6,0.6);
 }
 
@@ -94,6 +98,7 @@ double Drivetrain::DeadBand(double input, double band){
 }
 double Drivetrain::getAccelX(){
 	double accelX = RobotMap::accel -> GetX()*9.80;
+	std::cout << accelX <<std::endl;
 	return accelX;
 }
 double Drivetrain::getAccelY(){
@@ -120,6 +125,7 @@ bool Drivetrain::isMovingWithAccelY(){
 	return getAccelY()>-10;
 }
 void Drivetrain::setSpeed(double speedRF,double speedRB,double speedLF,double speedLB){
+	Disable();
 	rF->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,speedRF);
 	rB->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,speedRB);
 	lF->Set(ctre::phoenix::motorcontrol::ControlMode::PercentOutput,speedLF);
@@ -139,7 +145,16 @@ void Drivetrain::turnDegrees(double degrees){
 	lF->PIDWrite(modifier);
 	lB->PIDWrite(modifier);
 	SmartDashboard::PutString("DB/String 8","Still Going");
-
+}
+void Drivetrain::turnToCube(){
+	//Enable();
+	//turning = true;
+	double modifier = Robot::communication->GetModifier();
+	rF->PIDWrite(modifier+0.3);
+	rB->PIDWrite(modifier+0.3);
+	lF->PIDWrite(-modifier+0.3);
+	lB->PIDWrite(-modifier+0.3);
+	SmartDashboard::PutString("DB/String 8",std::to_string(modifier));
 
 }
 void Drivetrain::UsePIDOutput(double output) {
@@ -176,20 +191,19 @@ void Drivetrain::SetBrakeMode(bool brake){
 		rF->SetNeutralMode(ctre::phoenix::motorcontrol::Coast);
 	}
 }
+void Drivetrain::Strafe(double rotations){
+	double metToTicks = 10909.09/2;
 
+	double degrees=metToTicks*metToTicks;
+	Robot::gyroSubsystem->setDegrees(Robot::gyroSubsystem->gAngle());
+	SetSetpoint(degrees);
 
+	Enable();
 
-void Drivetrain::strafeRight(){
-	rFmodifier = -0.7;
-	rBmodifier = 0.7;
-	lFmodifier = 0.7;
-	lBmodifier = -0.7;
-}
-void Drivetrain::strafeLeft(){
-	rFmodifier = 0.7;
-	rBmodifier = -0.7;
-	lFmodifier = -0.7;
-	lBmodifier = 0.7;
+	rFmodifier += -0.3*(rotations / abs(rotations))	;
+	rBmodifier += 0.3*(rotations / abs(rotations));
+	lFmodifier += 0.3*(rotations / abs(rotations));
+	lBmodifier += -0.3*(rotations / abs(rotations));
 }
 // Put methods for controlling this subsystem
 // here. Call these from Commands.

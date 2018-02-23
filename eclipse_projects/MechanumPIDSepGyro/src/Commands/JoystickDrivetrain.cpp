@@ -32,10 +32,10 @@ void JoystickDrivetrain::Initialize() {
 
 // Called repeatedly when this Command is scheduled to run
 void JoystickDrivetrain::Execute() {
-	double accelX = Robot::drivetrain -> getAccelX();
-	double accelY = Robot::drivetrain -> getAccelY();
-	double accelZ = Robot::drivetrain -> getAccelZ();
-	double gyroAngle = Robot::gyroSubsystem -> gAngle();
+	//double accelX = Robot::drivetrain -> getAccelX();
+	//double accelY = Robot::drivetrain -> getAccelY();
+	//double accelZ = Robot::drivetrain -> getAccelZ();
+	//double gyroAngle = Robot::gyroSubsystem -> gAngle();
 	Robot::drivetrain->driving(Robot::oi->getJoystick1()->GetX(), Robot::oi->getJoystick1()->GetY(), Robot::oi->getJoystick2()->GetX(),0.75,0);
 	/*SmartDashboard::PutString("DB/String 0",std::to_string(accelX));
 	SmartDashboard::PutString("DB/String 1",std::to_string(accelY));
