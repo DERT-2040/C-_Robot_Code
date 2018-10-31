@@ -5,6 +5,7 @@ std::shared_ptr<WPI_TalonSRX> RobotMap::FLDrive;
 std::shared_ptr<WPI_TalonSRX> RobotMap::FRDrive;
 std::shared_ptr<WPI_TalonSRX> RobotMap::BLDrive;
 std::shared_ptr<WPI_TalonSRX> RobotMap::BRDrive;
+std::shared_ptr<AHRS> RobotMap::IMU;
 
 
 void RobotMap::init() {
@@ -16,5 +17,6 @@ void RobotMap::init() {
     BLDrive.reset(new WPI_TalonSRX(2));
     BRDrive.reset(new WPI_TalonSRX(3));
     BRDrive->SetInverted(true);
+    IMU.reset(new AHRS(SPI::Port::kMXP));
 
 }

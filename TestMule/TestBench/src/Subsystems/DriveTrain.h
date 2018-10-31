@@ -14,6 +14,7 @@
 #include "Commands/Subsystem.h"
 #include "WPILib.h"
 #include "ctre/Phoenix.h"
+#include <AHRS.h>
 /**
  *
  *
@@ -27,6 +28,7 @@ private:
 	std::shared_ptr<WPI_TalonSRX> FR;
 	std::shared_ptr<WPI_TalonSRX> BL;
 	std::shared_ptr<WPI_TalonSRX> BR;
+	std::shared_ptr<AHRS> IMU;
 
 public:
 	DriveTrain();
