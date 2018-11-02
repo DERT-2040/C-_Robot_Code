@@ -20,10 +20,10 @@ void DriveTrain::InitDefaultCommand()
 
 void DriveTrain::resetEncoders()
 {
-	FL->GetSensorCollection().SetQuadraturePosition(0,0);
+	//FL->GetSensorCollection().SetQuadraturePosition(0,0);
 	//FR->GetSensorCollection().SetQuadraturePosition(0);
 	//BL->GetSensorCollection().SetQuadraturePosition(0);
-	BR->GetSensorCollection().SetQuadraturePosition(0,0);
+	//BR->GetSensorCollection().SetQuadraturePosition(0,0);
 
 }
 void DriveTrain::Periodic()
@@ -38,7 +38,7 @@ void DriveTrain::tank()
 }
 
 void DriveTrain::getEncoderValues(){
-	SmartDashboard::PutString("DB/String 0", std::to_string(FL->GetSensorCollection().GetQuadraturePosition()));
+	//SmartDashboard::PutString("DB/String 0", std::to_string(FL->GetSensorCollection().GetQuadraturePosition()));
 	//SmartDashboard::PutString("DB/String 1", FR->GetSensorCollection().GetQuadraturePosition() +" ");
 	//SmartDashboard::PutString("DB/String 2", BL->GetSensorCollection().GetQuadraturePosition() +" ");
 	SmartDashboard::PutString("DB/String 1", std::to_string(IMU->GetDisplacementX()));
