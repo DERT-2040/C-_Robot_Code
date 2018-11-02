@@ -13,6 +13,8 @@ public:
 	static std::shared_ptr<WPI_TalonSRX> BLDrive;
 	static std::shared_ptr<WPI_TalonSRX> FRDrive;
 	static std::shared_ptr<WPI_TalonSRX> BRDrive;
+	static std::shared_ptr<Compressor> TestComp;
+	static std::shared_ptr<DoubleSolenoid> TestSolenoid;
 	static std::shared_ptr<AHRS> IMU;
 
 	static void init();
