@@ -26,10 +26,15 @@ void DriveTrain::resetEncoders()
 	//BR->GetSensorCollection().SetQuadraturePosition(0,0);
 
 }
+
 void DriveTrain::Periodic()
 {
 	getEncoderValues();
+	updatePosition();
 
+	SmartDashboard::PutString("DB/String 7", std::to_string(displacementX));
+	SmartDashboard::PutString("DB/String 8", std::to_string(displacementY));
+	SmartDashboard::PutString("DB/String 9", std::to_string(driveTrainAngle));
 }
 
 void DriveTrain::tank()
@@ -49,6 +54,19 @@ void DriveTrain::getEncoderValues(){
 	SmartDashboard::PutString("DB/String 6", std::to_string(IMU->GetAngle()));
 }
 
+void DriveTrain::updatePosition()
+{
+	double BRvelocity = BR->GetSensorCollection().GetQuadratureVelocity();
+	double FLvelocity = FL->GetSensorCollection().GetQuadratureVelocity();
+
+	driveTrainAngle += (BRvelocity - FLvelocity) * .20 / trackWidth;
 
 
+	displacementX += (trackWidth * (BRvelocity+FLvelocity) / 2 * (BRvelocity - FLvelocity))
+						* (sin((FLvelocity - BRvelocity) * .20 / trackWidth + driveTrainAngle) - sin(driveTrainAngle));
+
+	displacementY -=  (trackWidth * (BRvelocity+FLvelocity) / 2 * (BRvelocity - FLvelocity))
+							* (cos((FLvelocity - BRvelocity) * .20 / trackWidth + driveTrainAngle) - cos(driveTrainAngle));
+
+}
 
