@@ -25,8 +25,8 @@
 class Pneumatics: public frc::Subsystem {
 private:
 
-	std::shared_ptr<Compressor> Comp;
-	std::shared_ptr<DoubleSolenoid> Solenoid;
+	//std::shared_ptr<Compressor> Comp;
+	//std::shared_ptr<DoubleSolenoid> Solenoid;
 
 public:
 	Pneumatics();

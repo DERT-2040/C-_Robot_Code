@@ -31,11 +31,8 @@ private:
 	std::shared_ptr<WPI_TalonSRX> BR;
 	std::shared_ptr<AHRS> IMU;
 
-	double ticksToFeet = 0;
-	double displacementX = 0;
-	double displacementY = 0;
-	double trackWidth = 0;
-	double driveTrainAngle = 0;
+	double ticksToFeet = .001995819;
+
 
 public:
 
@@ -46,7 +43,10 @@ public:
 	void tank();
 	void resetEncoders();
 	void updatePosition();
-
+	double displacementX = 0;
+	double displacementY = 0;
+	double trackWidth = 16;
+	double driveTrainAngle = 0;
 	RobotDrive *tankDrive;
 
 };
