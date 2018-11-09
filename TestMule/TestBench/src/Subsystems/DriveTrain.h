@@ -31,7 +31,7 @@ private:
 	std::shared_ptr<WPI_TalonSRX> BR;
 	std::shared_ptr<AHRS> IMU;
 
-	double ticksToFeet = .001995819;
+	double ticksToFeet = 0.002206626/12;
 
 
 public:
@@ -43,6 +43,8 @@ public:
 	void tank();
 	void resetEncoders();
 	void updatePosition();
+
+	double previousPos = 0;
 	double displacementX = 0;
 	double displacementY = 0;
 	double trackWidth = 16;
