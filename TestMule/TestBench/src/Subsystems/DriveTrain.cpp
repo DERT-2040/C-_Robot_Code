@@ -30,14 +30,22 @@ void DriveTrain::resetEncoders()
 	//BL->GetSensorCollection().SetQuadraturePosition(0);
 	BR->GetSensorCollection().SetQuadraturePosition(0,0);
 
-
 }
 
 void DriveTrain::Periodic()
 {
 	getEncoderValues();
 	updatePosition();
+}
 
+double DriveTrain::getXPosition()
+{
+	return displacementX;
+}
+
+double DriveTrain::getYPosition()
+{
+	return displacementY;
 }
 
 void DriveTrain::tank()
@@ -60,4 +68,18 @@ void DriveTrain::updatePosition()
 	SmartDashboard::PutString("DB/String 8", std::to_string(displacementX));
 	SmartDashboard::PutString("DB/String 9", std::to_string(displacementY));
 }
+
+void DriveTrain::autoDrive(double speed, double omega)
+{
+	tankDrive->ArcadeDrive(speed, omega, false);
+}
+
+double DriveTrain::getGyroAngle()
+{
+	return (IMU->GetYaw());
+}
+
+
+
+
 

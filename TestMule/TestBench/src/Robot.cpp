@@ -52,7 +52,7 @@ void Robot::DisabledPeriodic() {
 }
 
 void Robot::AutonomousInit() {
-	autonomousCommand = chooser.GetSelected();
+	autonomousCommand = new DriveWithGyro(10);
 	if (autonomousCommand != nullptr)
 		autonomousCommand->Start();
 }
@@ -72,8 +72,21 @@ void Robot::TeleopInit() {
 		autonomousCommand->Cancel();
 }
 
-void Robot::TeleopPeriodic() {
+void Robot::TeleopPeriodic()
+{
+	periodic_t = Timer::GetFPGATimestamp() - start_t;
+	start_t = Timer::GetFPGATimestamp();
 	frc::Scheduler::GetInstance()->Run();
+	stop_t = Timer::GetFPGATimestamp();
+	delta_t = stop_t - start_t;
+	if(delta_t > spike)
+	{
+		spike = delta_t;
+	}
+	SmartDashboard::PutString("DB/String 3", std::to_string(delta_t));
+	SmartDashboard::PutString("DB/String 4", std::to_string(spike));
+	SmartDashboard::PutString("DB/String 2", std::to_string(periodic_t));
+
 }
 
 START_ROBOT_CLASS(Robot);

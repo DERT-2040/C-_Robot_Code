@@ -43,6 +43,11 @@ public:
 	void tank();
 	void resetEncoders();
 	void updatePosition();
+	void autoDrive(double speed, double omega);
+	double getXPosition();
+	double getYPosition();
+	double getGyroAngle();
+
 
 	double previousPos = 0;
 	double displacementX = 0;
