@@ -23,6 +23,18 @@ void DriveTrain::InitDefaultCommand()
 	IMU->Reset();
 }
 
+void DriveTrain::displayValues(double goalX,double goalY,double DriveError,double AngleError){
+	SmartDashboard::PutNumber("displacementX",displacementX);
+	SmartDashboard::PutNumber("displacementY",displacementY);
+	SmartDashboard::PutNumber("Left Encoder",FL->GetSensorCollection().GetQuadraturePosition());
+	SmartDashboard::PutNumber("Right Encoder",-1*BR->GetSensorCollection().GetQuadraturePosition());
+	SmartDashboard::PutNumber("Angle",IMU->GetYaw());
+	SmartDashboard::PutNumber("Goal X",goalX);
+	SmartDashboard::PutNumber("Goal Y",goalY);
+	SmartDashboard::PutNumber("DriveError",DriveError);
+	SmartDashboard::PutNumber("AngleError",AngleError);
+
+}
 void DriveTrain::resetEncoders()
 {
 	FL->GetSensorCollection().SetQuadraturePosition(0,0);
@@ -78,7 +90,6 @@ double DriveTrain::getGyroAngle()
 {
 	return (IMU->GetYaw());
 }
-
 
 
 

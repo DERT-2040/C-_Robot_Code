@@ -27,6 +27,7 @@ DriveWithGyro::DriveWithGyro(double _distance)
 	initialAngle = Robot::driveTrain->getGyroAngle();
 	DriveSetPoint = 0; //The drive PID set point is 0 because it is trying to get the remaining distance down to 0
 	AngleSetPoint = initialAngle;
+
 }
 
 // Called just before this Command runs the first time
@@ -62,7 +63,7 @@ void DriveWithGyro::Execute()
 	SmartDashboard::PutString("DB/String 4", std::to_string(remainingDistance));
 
 	Robot::driveTrain->autoDrive(DriveResultant, AngleResultant); //Calls the drive train autoDrive function with the DrivePID and AnglePID resultants
-
+	Robot::driveTrain->displayValues(goalX,goalY,DriveError,AngleError);
 }
 
 // Make this return true when this Command no longer needs to run execute()

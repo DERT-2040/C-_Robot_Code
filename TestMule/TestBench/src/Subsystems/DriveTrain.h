@@ -30,7 +30,6 @@ private:
 	std::shared_ptr<WPI_TalonSRX> BL;
 	std::shared_ptr<WPI_TalonSRX> BR;
 	std::shared_ptr<AHRS> IMU;
-
 	double ticksToFeet = 0.002206626/12;
 
 
@@ -47,7 +46,7 @@ public:
 	double getXPosition();
 	double getYPosition();
 	double getGyroAngle();
-
+	void displayValues(double goalX,double goalY,double DriveError,double AngleError);
 
 	double previousPos = 0;
 	double displacementX = 0;
