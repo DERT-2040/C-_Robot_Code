@@ -24,7 +24,7 @@ public:
 
 private:
 
-	double AnglePGain = 0.06, AngleIGain = 0.00001, AngleDGain = 0.002;
+	double AnglePGain = 0.05, AngleIGain = 0.00000, AngleDGain = 0.000;
 	double DrivePGain = 0.10, DriveIGain = 0.000001, DriveDGain = 0.006;
 	double distance = 0;
 

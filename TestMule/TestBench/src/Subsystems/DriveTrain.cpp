@@ -13,8 +13,6 @@ DriveTrain::DriveTrain() : frc::Subsystem("DriveTrain")
 	tankDrive = new RobotDrive(FL, BL, FR, BR);
 	displacementY = 0;
 	displacementX = 0;
-	SmartDashboard::PutString("DB/String 8", std::to_string(0));
-	SmartDashboard::PutString("DB/String 9", std::to_string(0));
 }
 
 void DriveTrain::InitDefaultCommand()
@@ -28,7 +26,7 @@ void DriveTrain::displayValues(double goalX,double goalY,double DriveError,doubl
 	SmartDashboard::PutNumber("displacementY",displacementY);
 	SmartDashboard::PutNumber("Left Encoder",FL->GetSensorCollection().GetQuadraturePosition());
 	SmartDashboard::PutNumber("Right Encoder",-1*BR->GetSensorCollection().GetQuadraturePosition());
-	SmartDashboard::PutNumber("Angle",IMU->GetYaw());
+	SmartDashboard::PutNumber("Angle",getGyroAngle());
 	SmartDashboard::PutNumber("Goal X",goalX);
 	SmartDashboard::PutNumber("Goal Y",goalY);
 	SmartDashboard::PutNumber("DriveError",DriveError);
@@ -62,6 +60,7 @@ double DriveTrain::getYPosition()
 
 void DriveTrain::tank()
 {
+	//displayValues(0,0,0,0);
 	tankDrive->ArcadeDrive(Robot::oi->gamepad->GetRawAxis(1), Robot::oi->gamepad->GetRawAxis(4));
 }
 
@@ -74,8 +73,8 @@ void DriveTrain::getEncoderValues(){
 
 void DriveTrain::updatePosition()
 {
-	displacementX += (FL->GetSensorCollection().GetQuadraturePosition()-previousPos)*ticksToFeet * sin(IMU->GetYaw() * M_PI/180);
-	displacementY += (FL->GetSensorCollection().GetQuadraturePosition()-previousPos)*ticksToFeet * cos(IMU->GetYaw() * M_PI/180);
+	displacementX += (-1*FL->GetSensorCollection().GetQuadraturePosition()+previousPos)*ticksToFeet * sin(IMU->GetYaw() * M_PI/180);
+	displacementY += (-1*FL->GetSensorCollection().GetQuadraturePosition()+previousPos)*ticksToFeet * cos(IMU->GetYaw() * M_PI/180);
 	previousPos = FL->GetSensorCollection().GetQuadraturePosition();
 	SmartDashboard::PutString("DB/String 8", std::to_string(displacementX));
 	SmartDashboard::PutString("DB/String 9", std::to_string(displacementY));
@@ -88,7 +87,14 @@ void DriveTrain::autoDrive(double speed, double omega)
 
 double DriveTrain::getGyroAngle()
 {
-	return (IMU->GetYaw());
+	double angle;
+	angle = IMU->GetYaw() + 360;
+	if(angle > 360)
+	{
+		angle -= 360;
+	}
+
+	return (angle);
 }
 
 

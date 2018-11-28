@@ -18,20 +18,19 @@ DriveWithGyro::DriveWithGyro(double _distance)
 	currentY = Robot::driveTrain->getYPosition();
 
 	//Calculates the Goal X and Y position based on the Robots current position and how far it wants to travel in a straight line
-	goalX = currentX - distance*sin(Robot::driveTrain->getGyroAngle() * M_PI/180); //??? Until further testing I think its subtraction because the encoders
-	goalY = currentY - distance*cos(Robot::driveTrain->getGyroAngle() * M_PI/180); //when moving forward are negative
+	goalX = currentX + distance*sin(Robot::driveTrain->getGyroAngle() * M_PI/180);
+	goalY = currentY + distance*cos(Robot::driveTrain->getGyroAngle() * M_PI/180);
 
 	SmartDashboard::PutString("DB/String 6", std::to_string(goalX));
 	SmartDashboard::PutString("DB/String 7", std::to_string(goalY));
 
 	initialAngle = Robot::driveTrain->getGyroAngle();
 	DriveSetPoint = 0; //The drive PID set point is 0 because it is trying to get the remaining distance down to 0
-	AngleSetPoint = initialAngle;
-
 }
 
 // Called just before this Command runs the first time
-void DriveWithGyro::Initialize() {
+void DriveWithGyro::Initialize()
+{
 
 }
 
@@ -52,7 +51,13 @@ void DriveWithGyro::Execute()
 
 	//Rotation PID
 	//How the PID works is commented above
-	AngleSetPoint = atan((goalX - currentX)/(goalY - currentY)) * 180/M_PI; //Updates the Angle SetPoint continuously to always track the goal
+	//Updates the Angle SetPoint continuously to always track the goal
+	//AngleSetPoint = atan((goalX - currentX)/(goalY - currentY)) * 180/M_PI + 360; //This line is wrong because because atan is not the arc tangent of a y/x combo
+	AngleSetPoint = atan2((goalX - currentX),(goalY - currentY)) * 180/M_PI + 360;
+	if(AngleSetPoint > 360)
+	{
+		AngleSetPoint -= 360;
+	}
 	AngleError = AngleSetPoint - Robot::driveTrain->getGyroAngle();
 	AngleIntegral += (AngleError*.02);
 	AngleDerivative = (AngleError - AnglePreviousError)/.02;
@@ -61,6 +66,8 @@ void DriveWithGyro::Execute()
 
 	SmartDashboard::PutString("DB/String 2", std::to_string(DriveResultant));
 	SmartDashboard::PutString("DB/String 4", std::to_string(remainingDistance));
+
+	//AngleResultant = 0;
 
 	Robot::driveTrain->autoDrive(DriveResultant, AngleResultant); //Calls the drive train autoDrive function with the DrivePID and AnglePID resultants
 	Robot::driveTrain->displayValues(goalX,goalY,DriveError,AngleError);
@@ -80,12 +87,14 @@ bool DriveWithGyro::IsFinished()
 }
 
 // Called once after isFinished returns true
-void DriveWithGyro::End() {
+void DriveWithGyro::End()
+{
 
 }
 
 // Called when another command which requires one or more of the same
 // subsystems is scheduled to run
-void DriveWithGyro::Interrupted() {
+void DriveWithGyro::Interrupted()
+{
 
 }
