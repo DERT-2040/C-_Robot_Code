@@ -38,6 +38,8 @@ void DriveTrain::Periodic()
 {
 	//getEncoderValues();
 	updatePosition();
+	SmartDashboard::PutString("DB/String 9", std::to_string(IMU->GetYaw()));
+
 }
 
 double DriveTrain::getXPosition()

@@ -18,11 +18,11 @@ DriveWithGyro::DriveWithGyro(double _distance)
 	currentY = Robot::driveTrain->getYPosition();
 
 	//Calculates the Goal X and Y position based on the Robots current position and how far it wants to travel in a straight line
-	goalX = currentX + distance*sin(Robot::driveTrain->getGyroAngle() * M_PI/180);
-	goalY = currentY + distance*cos(Robot::driveTrain->getGyroAngle() * M_PI/180);
+	//goalX = currentX + distance*sin(Robot::driveTrain->getGyroAngle() * M_PI/180);
+	//goalY = currentY + distance*cos(Robot::driveTrain->getGyroAngle() * M_PI/180);
 
-	//goalX = currentX + 5;
-	//goalY = currentY + 10;
+	goalX = currentX + 0;
+	goalY = currentY + 5;
 
 	SmartDashboard::PutString("DB/String 0", std::to_string(goalX));
 	SmartDashboard::PutString("DB/String 1", std::to_string(goalY));
@@ -78,10 +78,16 @@ void DriveWithGyro::Execute()
 	AngleResultant = AnglePGain*AngleError + AngleIGain*AngleIntegral + AngleDGain*AngleDerivative;
 	AnglePreviousError = AngleError;
 
+	//The larger the rotation error the smaller the drive resultant
+	DriveResultant = DriveResultant*(1 - (abs(AngleError)/180));
+
+
 	Robot::driveTrain->autoDrive(DriveResultant, -1*AngleResultant); //Calls the drive train autoDrive function with the DrivePID and AnglePID resultants
 
 	SmartDashboard::PutString("DB/String 2", std::to_string(currentX));
 	SmartDashboard::PutString("DB/String 3", std::to_string(currentY));
+	SmartDashboard::PutString("DB/String 5", std::to_string(AngleSetPoint));
+	SmartDashboard::PutString("DB/String 6", std::to_string(Robot::driveTrain->getGyroAngle()));
 }
 
 // Make this return true when this Command no longer needs to run execute()
