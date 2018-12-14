@@ -14,13 +14,14 @@ std::shared_ptr<AHRS> RobotMap::IMU;
 void RobotMap::init() {
 
     frc::LiveWindow *lw = frc::LiveWindow::GetInstance();
-    //TestComp.reset(new Compressor(0));
-    //TestSolenoid.reset(new DoubleSolenoid(0,1));
     FRDrive.reset(new WPI_TalonSRX(7));
+    FRDrive->SetInverted(true);
     BLDrive.reset(new WPI_TalonSRX(2));
+    BLDrive->SetInverted(true);
+
     BRDrive.reset(new WPI_TalonSRX(3));
     FLDrive.reset(new WPI_TalonSRX(0));
-    BRDrive->SetInverted(true);
+    FLDrive->SetInverted(true);
     IMU.reset(new AHRS(SPI::Port::kMXP));
 
 }

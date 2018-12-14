@@ -11,6 +11,7 @@ DriveTrain::DriveTrain() : frc::Subsystem("DriveTrain")
 	BR = RobotMap::BRDrive;
 	IMU = RobotMap::IMU;
 	tankDrive = new RobotDrive(FL, BL, FR, BR);
+	tankDrive->SetMaxOutput(.50);
 	displacementY = 0;
 	displacementX = 0;
 }
@@ -22,29 +23,20 @@ void DriveTrain::InitDefaultCommand()
 }
 
 void DriveTrain::displayValues(double goalX,double goalY,double DriveError,double AngleError){
-	SmartDashboard::PutNumber("displacementX",displacementX);
-	SmartDashboard::PutNumber("displacementY",displacementY);
-	SmartDashboard::PutNumber("Left Encoder",FL->GetSensorCollection().GetQuadraturePosition());
-	SmartDashboard::PutNumber("Right Encoder",-1*BR->GetSensorCollection().GetQuadraturePosition());
-	SmartDashboard::PutNumber("Angle",getGyroAngle());
-	SmartDashboard::PutNumber("Goal X",goalX);
-	SmartDashboard::PutNumber("Goal Y",goalY);
-	SmartDashboard::PutNumber("DriveError",DriveError);
-	SmartDashboard::PutNumber("AngleError",AngleError);
+
 
 }
+
 void DriveTrain::resetEncoders()
 {
 	FL->GetSensorCollection().SetQuadraturePosition(0,0);
 	//FR->GetSensorCollection().SetQuadraturePosition(0);
 	//BL->GetSensorCollection().SetQuadraturePosition(0);
-	BR->GetSensorCollection().SetQuadraturePosition(0,0);
-
 }
 
 void DriveTrain::Periodic()
 {
-	getEncoderValues();
+	//getEncoderValues();
 	updatePosition();
 }
 
@@ -60,15 +52,13 @@ double DriveTrain::getYPosition()
 
 void DriveTrain::tank()
 {
-	//displayValues(0,0,0,0);
-	tankDrive->ArcadeDrive(Robot::oi->gamepad->GetRawAxis(1), Robot::oi->gamepad->GetRawAxis(4));
+	tankDrive->ArcadeDrive(-1*Robot::oi->gamepad->GetRawAxis(1), -1*Robot::oi->gamepad->GetRawAxis(4), false);
 }
 
 void DriveTrain::getEncoderValues(){
 	SmartDashboard::PutString("DB/String 0", std::to_string(FL->GetSensorCollection().GetQuadraturePosition()));
 	SmartDashboard::PutString("DB/String 1", std::to_string(-1*BR->GetSensorCollection().GetQuadraturePosition()));
 	SmartDashboard::PutString("DB/String 5", std::to_string(IMU->GetYaw()));
-	//SmartDashboard::PutString("DB/String 6", std::to_string(IMU->GetAngle()));
 }
 
 void DriveTrain::updatePosition()
@@ -76,8 +66,6 @@ void DriveTrain::updatePosition()
 	displacementX += (-1*FL->GetSensorCollection().GetQuadraturePosition()+previousPos)*ticksToFeet * sin(IMU->GetYaw() * M_PI/180);
 	displacementY += (-1*FL->GetSensorCollection().GetQuadraturePosition()+previousPos)*ticksToFeet * cos(IMU->GetYaw() * M_PI/180);
 	previousPos = FL->GetSensorCollection().GetQuadraturePosition();
-	SmartDashboard::PutString("DB/String 8", std::to_string(displacementX));
-	SmartDashboard::PutString("DB/String 9", std::to_string(displacementY));
 }
 
 void DriveTrain::autoDrive(double speed, double omega)

@@ -52,9 +52,11 @@ void Robot::DisabledPeriodic() {
 }
 
 void Robot::AutonomousInit() {
-	autonomousCommand = new DriveWithGyro(10);
+
+	autonomousCommand = new DriveWithGyro(7);
 	if (autonomousCommand != nullptr)
 		autonomousCommand->Start();
+
 }
 
 void Robot::AutonomousPeriodic() {
@@ -83,9 +85,9 @@ void Robot::TeleopPeriodic()
 	{
 		spike = delta_t;
 	}
-	SmartDashboard::PutString("DB/String 3", std::to_string(delta_t));
-	SmartDashboard::PutString("DB/String 4", std::to_string(spike));
-	SmartDashboard::PutString("DB/String 2", std::to_string(periodic_t));
+	//SmartDashboard::PutString("DB/String 3", std::to_string(delta_t));
+	//SmartDashboard::PutString("DB/String 4", std::to_string(spike));
+	//SmartDashboard::PutString("DB/String 2", std::to_string(periodic_t));
 
 }
 

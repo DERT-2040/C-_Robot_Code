@@ -24,8 +24,8 @@ public:
 
 private:
 
-	double AnglePGain = 0.05, AngleIGain = 0.00000, AngleDGain = 0.000;
-	double DrivePGain = 0.10, DriveIGain = 0.000001, DriveDGain = 0.006;
+	double AnglePGain = 0.10, AngleIGain = 0.00000, AngleDGain = 0.003;
+	double DrivePGain = 0.3, DriveIGain = 0.00003, DriveDGain = 0.003;
 	double distance = 0;
 
 	double DriveError = 0, AngleError = 0, DriveSetPoint = 0, AngleSetPoint = 0, AngleResultant = 0, DriveResultant = 0, DrivePreviousError = 0,

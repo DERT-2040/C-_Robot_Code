@@ -21,11 +21,13 @@ DriveWithGyro::DriveWithGyro(double _distance)
 	goalX = currentX + distance*sin(Robot::driveTrain->getGyroAngle() * M_PI/180);
 	goalY = currentY + distance*cos(Robot::driveTrain->getGyroAngle() * M_PI/180);
 
-	SmartDashboard::PutString("DB/String 6", std::to_string(goalX));
-	SmartDashboard::PutString("DB/String 7", std::to_string(goalY));
+	//goalX = currentX + 5;
+	//goalY = currentY + 10;
+
+	SmartDashboard::PutString("DB/String 0", std::to_string(goalX));
+	SmartDashboard::PutString("DB/String 1", std::to_string(goalY));
 
 	initialAngle = Robot::driveTrain->getGyroAngle();
-	DriveSetPoint = 0; //The drive PID set point is 0 because it is trying to get the remaining distance down to 0
 }
 
 // Called just before this Command runs the first time
@@ -43,7 +45,7 @@ void DriveWithGyro::Execute()
 
 	//Driving Speed PID
 	remainingDistance = sqrt(pow(goalX - currentX, 2) + pow(goalY - currentY, 2)); //Gets the remaining euclidean distance to goal
-	DriveError = DriveSetPoint - remainingDistance; //Calculates The error from the setpoint of the PID
+	DriveError = remainingDistance; //Calculates The error from the setpoint of the PID
 	DriveIntegral += (DriveError*.02); //Integrates the error
 	DriveDerivative = (DriveError - DrivePreviousError)/.02; //Finds the derivative of the error over the last two loops
 	DriveResultant = DrivePGain*DriveError + DriveIGain*DriveIntegral + DriveDGain*DriveDerivative; //PID calculation
@@ -52,31 +54,40 @@ void DriveWithGyro::Execute()
 	//Rotation PID
 	//How the PID works is commented above
 	//Updates the Angle SetPoint continuously to always track the goal
-	//AngleSetPoint = atan((goalX - currentX)/(goalY - currentY)) * 180/M_PI + 360; //This line is wrong because because atan is not the arc tangent of a y/x combo
 	AngleSetPoint = atan2((goalX - currentX),(goalY - currentY)) * 180/M_PI + 360;
+
 	if(AngleSetPoint > 360)
 	{
 		AngleSetPoint -= 360;
 	}
+
 	AngleError = AngleSetPoint - Robot::driveTrain->getGyroAngle();
+
+	//Allows for the angle pid to be continous over a [0,360] range.
+	if(AngleError > 180)
+	{
+		AngleError = AngleError - 360;
+	}
+	else if(AngleError < -180)
+	{
+		AngleError = 360 + AngleError;
+	}
+
 	AngleIntegral += (AngleError*.02);
 	AngleDerivative = (AngleError - AnglePreviousError)/.02;
 	AngleResultant = AnglePGain*AngleError + AngleIGain*AngleIntegral + AngleDGain*AngleDerivative;
 	AnglePreviousError = AngleError;
 
-	SmartDashboard::PutString("DB/String 2", std::to_string(DriveResultant));
-	SmartDashboard::PutString("DB/String 4", std::to_string(remainingDistance));
+	Robot::driveTrain->autoDrive(DriveResultant, -1*AngleResultant); //Calls the drive train autoDrive function with the DrivePID and AnglePID resultants
 
-	//AngleResultant = 0;
-
-	Robot::driveTrain->autoDrive(DriveResultant, AngleResultant); //Calls the drive train autoDrive function with the DrivePID and AnglePID resultants
-	Robot::driveTrain->displayValues(goalX,goalY,DriveError,AngleError);
+	SmartDashboard::PutString("DB/String 2", std::to_string(currentX));
+	SmartDashboard::PutString("DB/String 3", std::to_string(currentY));
 }
 
 // Make this return true when this Command no longer needs to run execute()
 bool DriveWithGyro::IsFinished()
 {
-	if(abs(remainingDistance) < 0)
+	if(remainingDistance < .05)
 	{
 		return true;
 	}
