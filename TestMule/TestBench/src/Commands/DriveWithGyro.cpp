@@ -18,11 +18,8 @@ DriveWithGyro::DriveWithGyro(double _distance)
 	currentY = Robot::driveTrain->getYPosition();
 
 	//Calculates the Goal X and Y position based on the Robots current position and how far it wants to travel in a straight line
-	//goalX = currentX + distance*sin(Robot::driveTrain->getGyroAngle() * M_PI/180);
-	//goalY = currentY + distance*cos(Robot::driveTrain->getGyroAngle() * M_PI/180);
-
-	goalX = currentX + 0;
-	goalY = currentY + 5;
+	goalX = currentX + distance*sin(Robot::driveTrain->getGyroAngle() * M_PI/180);
+	goalY = currentY + distance*cos(Robot::driveTrain->getGyroAngle() * M_PI/180);
 
 	SmartDashboard::PutString("DB/String 0", std::to_string(goalX));
 	SmartDashboard::PutString("DB/String 1", std::to_string(goalY));
@@ -93,7 +90,7 @@ void DriveWithGyro::Execute()
 // Make this return true when this Command no longer needs to run execute()
 bool DriveWithGyro::IsFinished()
 {
-	if(remainingDistance < .05)
+	if(remainingDistance < .1)
 	{
 		return true;
 	}

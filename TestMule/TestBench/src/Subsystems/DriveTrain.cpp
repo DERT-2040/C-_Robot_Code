@@ -12,8 +12,10 @@ DriveTrain::DriveTrain() : frc::Subsystem("DriveTrain")
 	IMU = RobotMap::IMU;
 	tankDrive = new RobotDrive(FL, BL, FR, BR);
 	tankDrive->SetMaxOutput(.50);
-	displacementY = 0;
-	displacementX = 0;
+	xOffset = .45;
+	yOffset = -.38;
+	displacementY = yOffset;
+	displacementX = xOffset;
 }
 
 void DriveTrain::InitDefaultCommand()
@@ -30,8 +32,6 @@ void DriveTrain::displayValues(double goalX,double goalY,double DriveError,doubl
 void DriveTrain::resetEncoders()
 {
 	FL->GetSensorCollection().SetQuadraturePosition(0,0);
-	//FR->GetSensorCollection().SetQuadraturePosition(0);
-	//BL->GetSensorCollection().SetQuadraturePosition(0);
 }
 
 void DriveTrain::Periodic()
@@ -39,7 +39,8 @@ void DriveTrain::Periodic()
 	//getEncoderValues();
 	updatePosition();
 	SmartDashboard::PutString("DB/String 9", std::to_string(IMU->GetYaw()));
-
+	SmartDashboard::PutString("DB/String 2", std::to_string(displacementX));
+	SmartDashboard::PutString("DB/String 3", std::to_string(displacementY));
 }
 
 double DriveTrain::getXPosition()
@@ -85,6 +86,19 @@ double DriveTrain::getGyroAngle()
 	}
 
 	return (angle);
+}
+
+void DriveTrain::resetDisplacement()
+{
+	displacementY = 0;
+	displacementX = 0;
+	resetEncoders();
+	previousPos = 0;
+}
+
+std::shared_ptr<AHRS> DriveTrain::getIMU()
+{
+	return IMU;
 }
 
 

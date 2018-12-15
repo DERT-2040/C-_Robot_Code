@@ -47,10 +47,16 @@ public:
 	double getYPosition();
 	double getGyroAngle();
 	void displayValues(double goalX,double goalY,double DriveError,double AngleError);
+	void resetDisplacement();
+	std::shared_ptr<AHRS> getIMU();
+
+private:
 
 	double previousPos = 0;
 	double displacementX = 0;
 	double displacementY = 0;
+	double xOffset;
+	double yOffset;
 	double trackWidth = 16;
 	double driveTrainAngle = 0;
 	RobotDrive *tankDrive;
